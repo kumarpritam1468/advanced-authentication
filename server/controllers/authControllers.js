@@ -78,7 +78,7 @@ export const verifyEmail = async (req, res) => {
             return res.status(400).json({ success: false, message: "Invalid code" });
         }
 
-        // await sendWelcomeMail(user.email, user.name);
+        await sendWelcomeMail(user.email, user.name);
 
         user.isVerified = true;
         user.verificationToken = undefined;
@@ -90,7 +90,7 @@ export const verifyEmail = async (req, res) => {
             success: true,
             message: "Verified Email Successfully",
             user: {
-                ...newUser._doc,
+                ...user._doc,
                 password: "Hidden"
             }
         });
