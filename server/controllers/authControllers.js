@@ -50,18 +50,47 @@ export const signup = async (req, res) => {
 }
 
 export const login = async (req, res) => {
+    const { email, password } = req.body;
+
     try {
+        const user = await User.findOne({ email });
 
+        if (!user) {
+            return res.status(400).json({ success: false, message: "Invalid Credentials" });
+        }
+
+        const isCorrect = await bcrypt.compare(password, user.password);
+
+        if (!isCorrect) {
+            return res.status(400).json({ success: false, message: "Invalid Credentials" });
+        }
+
+        generateTokenSetCookie(res, user._id);
+
+        user.lastLogin = new Date();
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            message: "Logged in successfully",
+            user: {
+                ...user._doc,
+                password: "Hidden"
+            }
+        });
     } catch (error) {
-
+        console.log(error);
+        res.status(500).json({ success: false, message: error.message });
     }
 }
 
 export const logout = async (req, res) => {
     try {
-
+        res.clearCookie("jwt");
+        res.status(200).json({ success: true, message: "Logout successfully" });
     } catch (error) {
-
+        console.log(error);
+        res.status(500).json({ success: false, message: error.message });
     }
 }
 
