@@ -1,7 +1,9 @@
-import User from "../models/userModel.js";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
+
+import User from "../models/userModel.js";
 import generateTokenSetCookie from "../utils/generateTokenSetCookie.js"
-import { sendVerificationToken, sendWelcomeMail } from "../mailtrap/emails.js";
+import { sendPasswordResetMail, sendPasswordResetSuccessMail, sendVerificationToken, sendWelcomeMail } from "../mailtrap/emails.js";
 
 export const signup = async (req, res) => {
     const { name, email, password } = req.body;
@@ -123,6 +125,61 @@ export const verifyEmail = async (req, res) => {
                 password: "Hidden"
             }
         });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+}
+
+export const forgotPassword = async (req, res) => {
+    const { email } = req.body;
+    try {
+        console.log(process.env.CLIENT_URL);
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(400).json({ success: false, message: "User not found" });
+        }
+
+        const resetToken = crypto.randomBytes(20).toString("hex");
+        const resetTokenExpiresAt = Date.now() + 1 * 60 * 60 * 1000;
+
+        user.resetPasswordToken = resetToken;
+        user.resetPasswordExpiresAt = resetTokenExpiresAt;
+
+        await user.save();
+
+        await sendPasswordResetMail(user.email, `${process.env.CLIENT_URL}/reset-password/${resetToken}`);
+
+        res.status(200).json({ success: true, message: "Password reset link sent to your email" });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+}
+
+export const resetPassword = async (req, res) => {
+    try {
+        const { token } = req.params;
+        const { password } = req.body;
+        const user = await User.findOne({ resetPasswordToken: token, resetPasswordExpiresAt: { $gt: Date.now() } });;
+
+        if (!user) {
+            return res.status(401).json({ success: false, message: "Unauthroized access" });
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedNewPassowrd = await bcrypt.hash(password, salt);
+
+        user.password = hashedNewPassowrd;
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpiresAt = undefined;
+
+        await user.save();
+
+        await sendPasswordResetSuccessMail(user.email, user.name);
+
+        res.status(200).json({ success: true, message: "Password reset success" });
     } catch (error) {
         console.log(error);
         res.status(500).json({ success: false, message: error.message });
