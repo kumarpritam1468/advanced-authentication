@@ -10,6 +10,8 @@ const SignupPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const isLoading = true;
+
   const handleSignup = (e) => {
     e.preventDefault();
   }
@@ -58,7 +60,7 @@ const SignupPage = () => {
             whileTap={{ scale: 0.98 }}
             type="submit"
           >
-            Sign Up
+            {isLoading ? <Loader className=" animate-spin size-6 mx-auto" /> : "Login"}
           </motion.button>
         </form>
       </div>
