@@ -23,7 +23,7 @@ const LoginPage = () => {
         opacity: 1, y: 0
       }}
       transition={{ duration: 0.5 }}
-      className=" max-w-md max-md:max-w-sm max-md:mx-4 w-full bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden scale-50"
+      className=" max-w-md max-md:max-w-sm max-md:mx-4 w-full bg-gray-800 bg-opacity-50 backdrop-filter backdrop-blur-xl rounded-2xl shadow-xl overflow-hidden "
     >
       <div className=" p-8">
         <h2 className=" text-3xl font-bold mb-6 text-center bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
