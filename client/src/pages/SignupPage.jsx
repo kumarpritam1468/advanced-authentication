@@ -2,18 +2,28 @@ import { motion } from "framer-motion"
 import { User, Mail, Lock, Loader } from 'lucide-react'
 import Input from "../components/Input";
 import { useState } from "react";
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import PasswordStrength from "../components/PasswordStrength";
+import { useAuthStore } from "../store/store";
 
 const SignupPage = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const isLoading = true;
+  const navigate = useNavigate();
 
-  const handleSignup = (e) => {
+  const { signup, error, isLoading } = useAuthStore();
+
+  const handleSignup = async (e) => {
     e.preventDefault();
+
+    try {
+      await signup(name, email, password);
+      navigate('/verify-email');
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   return (
@@ -55,18 +65,19 @@ const SignupPage = () => {
             onChange={(e) => setPassword(e.target.value)}
           />
 
+          {error && <p className=" text-red-500 font-semibold my-2">{error}</p>}
+
+          <PasswordStrength password={password} />
+
           <motion.button className=" mt-5 w-full py-3 px-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-lg shadow-lg hover:from-green-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             type="submit"
+            disabled={isLoading}
           >
-            {isLoading ? <Loader className=" animate-spin size-6 mx-auto" /> : "Login"}
+            {isLoading ? <Loader className=" animate-spin size-6 mx-auto" /> : "Sign Up"}
           </motion.button>
         </form>
-      </div>
-
-      <div className=" px-8 pb-6">
-        <PasswordStrength password={password} />
       </div>
 
       <div className=" px-8 py-4 bg-gray-900 bg-opacity-50 flex justify-center">
