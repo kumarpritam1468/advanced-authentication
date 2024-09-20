@@ -2,12 +2,15 @@ import React, { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom';
 import { Loader } from 'lucide-react'
+import { useAuthStore } from '../store/store';
+import toast from 'react-hot-toast';
 
 const EmailVerification = () => {
     const [code, setCode] = useState(["", "", "", "", "", ""]);
     const inputRefs = useRef([]);
     const navigate = useNavigate();
-    const isLoading = false;
+
+    const {error, isLoading, verifyEmail} = useAuthStore();
 
     const handleChange = (index, value) => {
         const newCode = [...code];
@@ -41,9 +44,16 @@ const EmailVerification = () => {
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        alert("submit hua be lodu");
+        const verificationCode = code.join("");
+        try {
+            await verifyEmail(verificationCode);
+            navigate('/');
+            toast.success("Email verified and Logged In");
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     // Auto submit when filled
@@ -89,6 +99,7 @@ const EmailVerification = () => {
                         ))}
 
                     </div>
+                    {error && <p className=' text-red-500 font-semibold my-2'>{error}</p>}
                     <motion.button className=" mt-5 w-full py-3 px-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-lg shadow-lg hover:from-green-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200"
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
