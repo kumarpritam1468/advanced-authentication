@@ -3,15 +3,22 @@ import { Mail, Lock, Loader } from 'lucide-react'
 import Input from "../components/Input";
 import { useState } from "react";
 import { Link } from 'react-router-dom'
+import { useAuthStore } from "../store/store";
+// import toast from "react-hot-toast";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const isLoading = false;
+  const {login, isLoading, error} = useAuthStore();
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
+    try {
+      await login(email, password);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   return (
@@ -48,6 +55,7 @@ const LoginPage = () => {
 
           <Link className=" hover:underline underline-offset-2 text-green-400">Forgot Password?</Link>
 
+          {error && <p className=" text-red-500 mt-2 font-semibold">{error}</p>}
           <motion.button className=" mt-5 w-full py-3 px-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-lg shadow-lg hover:from-green-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.95 }}
