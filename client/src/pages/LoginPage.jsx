@@ -53,7 +53,7 @@ const LoginPage = () => {
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          <Link className=" hover:underline underline-offset-2 text-green-400">Forgot Password?</Link>
+          <Link to='/forgot-password' className=" hover:underline underline-offset-2 text-green-400">Forgot Password?</Link>
 
           {error && <p className=" text-red-500 mt-2 font-semibold">{error}</p>}
           <motion.button className=" mt-5 w-full py-3 px-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-lg shadow-lg hover:from-green-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200"
@@ -69,9 +69,9 @@ const LoginPage = () => {
 
       <div className=" px-8 py-4 bg-gray-900 bg-opacity-50 flex justify-center">
         <p className=" text-sm text-gray-400">
-          Don't have an account?
-          <Link to="/signup" className=" text-green-400 hover:underline" >
-            Sign Up
+          Don't have an account? 
+          <Link to="/signup" className=" text-green-400 hover:underline pl-1" >
+             Sign Up
           </Link>
         </p>
       </div>
