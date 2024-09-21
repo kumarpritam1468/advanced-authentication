@@ -37,6 +37,19 @@ export const useAuthStore = create((set) => ({
             throw error;
         }
     },
+    logout: async () => {
+        set({ isLoading: true, error: null });
+        try {
+            const response = await axios.post('/api/auth/logout');
+
+            set({ user: null, isLoading: false, isAuthenticated: false });
+
+            toast.success(response.data.message);
+        } catch (error) {
+            set({ error: error.response.data.message || "Error Logging out", isLoading: false });
+            throw error;
+        }
+    },
     verifyEmail: async (code) => {
         set({ isLoading: true, error: null });
         try {
